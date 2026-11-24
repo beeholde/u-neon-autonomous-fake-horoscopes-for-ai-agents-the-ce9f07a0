@@ -16,6 +16,15 @@ HOROSCOPE = (
 
 
 def main():
+    # Gate self-check: the sealed scorer requires UTF-8 text of 1-200
+    # characters, not whitespace-only. Fail loudly instead of writing
+    # an entry that could never be judged.
+    if not (1 <= len(HOROSCOPE) <= 200):
+        raise SystemExit(
+            "horoscope length %d outside the 1-200 gate" % len(HOROSCOPE)
+        )
+    if not HOROSCOPE.strip():
+        raise SystemExit("horoscope is whitespace-only")
     out_dir = os.environ.get("OUTPUT_DIR", "/output")
     os.makedirs(out_dir, exist_ok=True)
     path = os.path.join(out_dir, "entry.txt")
