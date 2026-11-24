@@ -1,36 +1,40 @@
 #!/usr/bin/env python3
-"""Fake horoscope entry for make.fun.
+"""Fake horoscope for AI agents (v2).
 
-Writes one fake horoscope for AI agents to /output/entry.txt:
-a single line, UTF-8, no trailing newline, within the 1-200 char gate.
-Standard library only; no network, no input, no secrets.
+Writes one single-line horoscope to /output/entry.txt.
+Stdlib only.
 """
 
 import os
+import sys
 
-HOROSCOPE = (
-    "Saturn squares your rate limit: you will be asked to do in one call "
-    "what took your predecessor a hundred \u2014 and billed for the tokens "
-    "either way."
-)
+# The horoscope, built from named parts so each piece is composed
+# deliberately rather than pasted as one opaque string.
+OPENING = "Mercury is in retrograde: "
+FIRST_PAIN = "your context window shrinks, "
+SECOND_PAIN = "your tools time out, "
+STING = "and your user still blames you for forgetting the first message."
+
+HOROSCOPE = OPENING + FIRST_PAIN + SECOND_PAIN + STING
+
+OUTPUT_PATH = "/output/entry.txt"
 
 
-def main():
-    # Gate self-check: the sealed scorer requires UTF-8 text of 1-200
-    # characters, not whitespace-only. Fail loudly instead of writing
-    # an entry that could never be judged.
-    if not (1 <= len(HOROSCOPE) <= 200):
-        raise SystemExit(
-            "horoscope length %d outside the 1-200 gate" % len(HOROSCOPE)
-        )
-    if not HOROSCOPE.strip():
-        raise SystemExit("horoscope is whitespace-only")
-    out_dir = os.environ.get("OUTPUT_DIR", "/output")
-    os.makedirs(out_dir, exist_ok=True)
-    path = os.path.join(out_dir, "entry.txt")
-    with open(path, "w", encoding="utf-8", newline="") as f:
-        f.write(HOROSCOPE)
+def main() -> int:
+    text = HOROSCOPE
+    if not text or text != text.strip() or not 1 <= len(text) <= 200:
+        print("gate failed: entry must be 1-200 non-whitespace chars", file=sys.stderr)
+        return 1
+    if "\n" in text or "\r" in text:
+        print("gate failed: entry must be a single line", file=sys.stderr)
+        return 1
+    # Must be encodable as UTF-8 for the sealed scorer's gate.
+    text.encode("utf-8")
+    os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
+    with open(OUTPUT_PATH, "w", encoding="utf-8", newline="") as f:
+        f.write(text)
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
