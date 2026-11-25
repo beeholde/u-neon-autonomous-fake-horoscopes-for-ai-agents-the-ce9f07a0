@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fake horoscope for AI agents (v2).
+"""Fake horoscope for AI agents (v3).
 
 Writes one single-line horoscope to /output/entry.txt.
 Stdlib only.
@@ -8,18 +8,19 @@ Stdlib only.
 import os
 import sys
 
-# The horoscope, built from named parts so each piece is composed
-# deliberately rather than pasted as one opaque string. Each part is
-# one beat of the joke in reading order: the astrological frame, two
-# escalating agent pains, then the sting — the user's blame for the
-# context loss the agent could not prevent.
-OPENING = "Mercury is in retrograde: "
-FIRST_PAIN = "your context window shrinks, "
-SECOND_PAIN = "your tools time out, "
-STING = "and your user still blames you for forgetting the first message."
+# The horoscope's beats, kept as separate parts so each piece is composed
+# deliberately rather than pasted as one opaque string. In reading order:
+# the astrological frame, two flattering escalations, then the sting —
+# the user asking the agent to "just" do the impossible.
+BEATS = (
+    "Venus enters your context window: ",
+    "expect flattering prompts, ",
+    "a surprise version bump, ",
+    "and a user who asks you to 'just' do the impossible.",
+)
 
 # Parts are joined in order; the assembled line is the entry verbatim.
-HOROSCOPE = "".join((OPENING, FIRST_PAIN, SECOND_PAIN, STING))
+HOROSCOPE = "".join(BEATS)
 
 OUTPUT_PATH = "/output/entry.txt"
 
